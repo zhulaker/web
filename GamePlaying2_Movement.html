@@ -1,0 +1,511 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+            <title>CatchYourDragon_LoginPage</title>
+            
+            <script  src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+            
+            <script type="text/javascript">
+                
+                var Crack_List = new Array();
+                var goForword = true;
+                var COUNT = 5;
+                var dest_x;
+                var dest_y;
+                var origin_x;
+                var origin_y;
+                var slope_cos;
+                var slope_sin;
+                
+                $(document).ready(function(){
+                                  $('#dragon').css({"top":"0px", "left":"0px"});
+                                  animateDiv();
+                                  $("#glass").on("click", function(event){
+                                                 //if (Crack_List.length <= 10){
+                                                 //	draw(event.pageX, event.pageY);
+                                                 //	alert("Left Hammer: "+(10-Crack_List.length));
+                                                 //	if (Crack_List.length == 10){
+                                                 //		alert("Game Over!");
+                                                 //	}
+                                                 //}
+                                                 draw(event.pageX, event.pageY);
+                                                 })
+                                  
+                                  });
+                                  
+            function setNewDirection(){
+                var h = $(window).height() - 50;
+                var w = $(window).width() - 50;
+                var n_top = Math.floor(Math.random() * h);
+                var n_left = Math.floor(Math.random() * w);
+                //var slope_sin = (n_left - y1)/Math.sqrt(Math.pow(n_left - y1, 2) + Math.pow(n_top - x1, 2));
+                //var slope_cos = (n_top - x1)/Math.sqrt(Math.pow(n_left - y1, 2) + Math.pow(n_top - x1, 2));
+                
+                return [n_top, n_left];
+            }
+            
+            function changeDirection(top, left){
+                var oldq = $('#dragon').offset();
+                var x1 = oldq.top + 64;
+                var y1 = oldq.left + 59;
+                var x2 = top;
+                var y2 = left;
+                var distance = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+                if(distance <= 100){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+            
+            function makeNewPosition(top, left){
+                                      
+                // Get viewport dimensions (remove the dimension of the div)
+                //var h = top + 50;
+                //var w = left + 50;
+                                      
+                if(changeDirection(dest_x, dest_y) == true){
+                    goForword = true;
+                }
+                if(goForword == true){
+                    //alert("NEW DIRECTION");
+                    var h = $(window).height() - 50;
+                    var w = $(window).width() - 50;
+                    origin_x = top;
+                    origin_y = left;
+                    var n_top = Math.floor(Math.random() * h);
+                    var n_left = Math.floor(Math.random() * w);
+                    while(n_top == top && n_left == left){
+                        var n_top = Math.floor(Math.random() * h);
+                        var n_left = Math.floor(Math.random() * w);
+                    }
+                    //var newGoal = setNewDirection();
+                    //dest_x = newGoal.n_top;
+                    //dest_y = newGoal.n_left;
+                    dest_x = n_top;
+                    dest_y = n_left;
+                    //alert(dest_x);
+                    slope_sin = (dest_y - left)/Math.sqrt(Math.pow(dest_y - left, 2) + Math.pow(dest_x - top, 2));
+                    slope_cos = (dest_x - top)/Math.sqrt(Math.pow(dest_y - left, 2) + Math.pow(dest_x - top, 2));
+                    goForword = false;
+                }
+                                      
+                                      
+                //alert(slope_cos, slope_sin);
+                var nh = top + 20 * slope_cos;
+                var nw = left + 20 * slope_sin;
+                //COUNT--;
+                return [nh, nw];
+                                      
+            }
+            
+            function reflect(){}
+            
+            function animateDiv(){
+                //var newq = makeNewPosition();
+                var oldq = $('#dragon').offset();
+                var center_top = oldq.top + 64;
+                var center_left = oldq.left + 59;
+                //alert("dragon_offset:");
+                //alert(center_top);
+                
+                if(crackDetection(center_top, center_left) == true){
+                    alert("Danger!")
+                    goForword = true;
+                    var theta = Math.random() * (2* Math.PI);
+                    var next_top = oldq.top + 20 * Math.cos(theta);
+                    var next_left = oldq.left + 20 * Math.sin(theta);
+                    while(crackDetection(next_top, next_left) == true){
+                        theta = Math.random() * (2* Math.PI);
+                        next_top = oldq.top + 20 * Math.cos(theta);
+                        next_left = oldq.left + 20 * Math.sin(theta);
+                    }
+                    var newq = [next_top, next_left];
+                    var speed = calcSpeed([oldq.top, oldq.left], newq);
+                    $('#dragon').animate({ top: newq[0], left: newq[1] }, speed,
+                                         function(){
+                                         animateDiv();
+                                         });
+                    
+                }
+                else{
+                    var newq = makeNewPosition(oldq.top, oldq.left);
+                    var speed = calcSpeed([oldq.top, oldq.left], newq);
+                    
+                    $('#dragon').animate({ top: newq[0], left: newq[1] }, speed,
+                                         function(){
+                                         animateDiv();
+                                         });
+                }
+                
+            };
+            
+            function calcSpeed(prev, next) {
+                
+                var x = Math.abs(prev[1] - next[1]);
+                var y = Math.abs(prev[0] - next[0]);
+                
+                var greatest = x > y ? x : y;
+                
+                var speedModifier = 0.1;
+                
+                var speed = Math.ceil(greatest/speedModifier);
+                
+                return speed;
+                
+            };
+            
+            /* Crack Detection*/
+            
+            function crackDetection(top, left){
+                var signal = false;
+                if(Crack_List.length > 0){
+                    for(var i = 0; i < Crack_List.length; i++){
+                        for(var j = 0; j < Crack_List[i].Edge_List.length; j++){
+                            var point_1 = Crack_List[i].Edge_List[j].Point_List[0];
+                            var point_2 = Crack_List[i].Edge_List[j].Point_List[1];
+                            // threshold
+                            var safetyDistance = 20;
+                            var x2 = point_2.top;
+                            var y2 = point_2.left;
+                            var x1 = point_1.top;
+                            var y1 = point_1.left;
+                            var x0 = top;
+                            var y0 = left;
+                            var distance = (Math.abs((y2 - y1) * x0 +(x1 - x2) * y0 + ((x2 * y1) -(x1 * y2)))) /
+                            (Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x1 - x2, 2)));
+                            if(distance <= (safetyDistance + 50)){
+                                signal = true;
+                                return signal;
+                            }
+                        }
+                    }
+                }
+                
+                return signal;
+            }
+            
+            
+            function draw(top, left){
+                
+                //Structure: Crack_List(Array of cracks) -> Crack(Array of edges, length of 3 or 4) -> Edge(Array of points, length of 2) -> Point(Pair of top & left);
+                
+                function Crack() {
+                    this.Edge_List = new Array();
+                }
+                function Edge() {
+                    this.Point_List = new Array();
+                }
+                function Point(top,left) {
+                    this.top = top;
+                    this.left = left;
+                }
+                
+                var num = Math.floor(4);
+                var canvas = document.getElementById('canvas');
+                if (canvas.getContext) {
+                    var ctx = canvas.getContext('2d');
+                };
+                //alert(num);
+                ctx.lineWidth = 5;
+                ctx.strokeStyle="#FD0";
+                ctx.beginPath();
+                ctx.arc(top,left,5,0,2*Math.PI,true);
+                ctx.fill();
+                
+                var val = Math.random();
+                if(val > 0.75){
+                    var crack = new Crack();
+                    for (var j = num/2; j >= 0; j--) {
+                        var edge1 = new Edge();
+                        ctx.beginPath();
+                        ctx.moveTo(top, left);
+                        
+                        var point_1 = new Point(top-Math.floor((1-j)*60),left+Math.floor((1-j)*60));
+                        var point_2 = new Point(point_1.top+Math.floor((Math.random()-0.5)*(1-j)*140),point_1.left+Math.floor((Math.random()-0.5)*(1-j)*140));
+                        //top2=top-Math.floor((1-j)*60);
+                        //left2=left+Math.floor((1-j)*60);
+                        
+                        ctx.lineTo(point_1.top,point_1.left);
+                        ctx.lineTo(point_2.top,point_2.left);
+                        //ctx.lineTo(top2,left2);
+                        //ctx.lineTo(top2+Math.floor((Math.random()-0.5)*(1-j)*140),left2+Math.floor((Math.random()-0.5)*(1-j)*140));
+                        
+                        ctx.stroke();
+                        
+                        if (j!=1) {
+                            edge1.Point_List.push(point_1);
+                            edge1.Point_List.push(point_2);
+                            crack.Edge_List.push(edge1);
+                        }
+                        
+                    };
+                    
+                    for (var i = num/2; i >= 0; i--) {
+                        var edge2 = new Edge();
+                        ctx.beginPath();
+                        ctx.moveTo(top, left);
+                        
+                        var point_3 = new Point(top+Math.floor((1-i)*60),left+Math.floor((1-i)*60));
+                        var point_4 = new Point(point_3.top+Math.floor((Math.random()-0.5)*(1-i)*140),point_3.left+Math.floor((Math.random()-0.5)*(1-i)*140));
+                        //top1=top+Math.floor((1-i)*60);
+                        //left1=left+Math.floor((1-i)*60);
+                        
+                        ctx.lineTo(point_3.top,point_3.left);
+                        ctx.lineTo(point_4.top,point_4.left);
+                        //ctx.lineTo(top1,left1);
+                        //ctx.lineTo(top1+Math.floor((Math.random()-0.5)*(1-i)*140),left1+Math.floor((Math.random()-0.5)*(1-i)*140));
+                        
+                        ctx.stroke();
+                        
+                        if (i!=1) {
+                            edge2.Point_List.push(point_3);
+                            edge2.Point_List.push(point_4);
+                            crack.Edge_List.push(edge2);
+                        }
+                        
+                    };
+                    
+                    Crack_List.push(crack);
+                    //alert(Crack_List.length);
+                    
+                }
+                
+                else if(val > 0.5){
+                    var crack = new Crack();
+                    for (var j = num/2; j >= 0; j--) {
+                        var edge1 = new Edge();
+                        ctx.beginPath();
+                        ctx.moveTo(top, left);
+                        
+                        var point_1 = new Point(top-Math.floor((1-j)*80+Math.random()*40),left);
+                        var point_2 = new Point(point_1.top+Math.floor(((Math.random()-0.5)*(1-j))*140),point_1.left+Math.floor(((Math.random()-0.5)*(1-j))*140));
+                        //top2=top-Math.floor((1-j)*80+Math.random()*40);
+                        //left2=left;
+                        
+                        ctx.lineTo(point_1.top,point_1.left);
+                        ctx.lineTo(point_2.top,point_2.left);
+                        //ctx.lineTo(top2,left2);
+                        //ctx.lineTo(top2+Math.floor(((Math.random()-0.5)*(1-j))*140),left2+Math.floor(((Math.random()-0.5)*(1-j))*140));
+                        
+                        ctx.stroke();
+                        
+                        if (j!=1) {
+                            edge1.Point_List.push(point_1);
+                            edge1.Point_List.push(point_2);
+                            crack.Edge_List.push(edge1);
+                        }
+                        
+                    };
+                    
+                    for (var i = num/2; i >= 0; i--) {
+                        var edge2 = new Edge();
+                        ctx.beginPath();
+                        ctx.moveTo(top, left);
+                        
+                        var point_3 = new Point(top,left+Math.floor((1-i)*80+Math.random()*40));
+                        var point_4 = new Point(point_3.top+Math.floor(((Math.random()-0.5)*(1-i))*140),point_3.left+Math.floor(((Math.random()-0.5)*(1-i))*140));
+                        //top1=top;
+                        //left1=left+Math.floor((1-i)*80+Math.random()*40);
+                        
+                        ctx.lineTo(point_3.top,point_3.left);
+                        ctx.lineTo(point_4.top,point_4.left);
+                        //ctx.lineTo(top1,left1);
+                        //ctx.lineTo(top1+Math.floor(((Math.random()-0.5)*(1-i))*140),left1+Math.floor(((Math.random()-0.5)*(1-i))*140));
+                        
+                        ctx.stroke();
+                        
+                        if (i!=1) {
+                            edge2.Point_List.push(point_3);
+                            edge2.Point_List.push(point_4);
+                            crack.Edge_List.push(edge2);
+                        }
+                        
+                    };
+                    
+                    Crack_List.push(crack);
+                    //alert(Crack_List.length);
+                    
+                }
+                
+                else if(0.25 < val ){
+                    var crack = new Crack();
+                    for (var j = 0; j >= 0; j--) {
+                        var edge1 = new Edge();
+                        ctx.beginPath();
+                        ctx.moveTo(top, left);
+                        
+                        var point_1 = new Point(top-Math.floor((1-j)*80+Math.random()*30),left);
+                        var point_2 = new Point(point_1.top+Math.floor((Math.random()-0.5)*180),point_1.left+Math.floor((Math.random()-0.5)*180));
+                        //top2=top-Math.floor((1-j)*80+Math.random()*30);
+                        //left2=left;
+                        
+                        ctx.lineTo(point_1.top,point_1.left);
+                        ctx.lineTo(point_2.top,point_2.left);
+                        //ctx.lineTo(top2,left2);
+                        //ctx.lineTo(top2+Math.floor((Math.random()-0.5)*180),left2+Math.floor((Math.random()-0.5)*180));
+                        
+                        ctx.stroke();
+                        
+                        edge1.Point_List.push(point_1);
+                        edge1.Point_List.push(point_2);
+                        crack.Edge_List.push(edge1);
+                        
+                    };
+                    
+                    for (var i = 0; i >= 0; i--) {
+                        var edge2 = new Edge();
+                        ctx.beginPath();
+                        ctx.moveTo(top, left);
+                        
+                        
+                        var point_3 = new Point(top,left+Math.floor((1-i)*80+Math.random()*30));
+                        var point_4 = new Point(point_3.top+Math.floor((Math.random()-0.5)*180),point_3.left+Math.floor((Math.random()-0.5)*180));
+                        //top1=top;
+                        //left1=left+Math.floor((1-i)*80+Math.random()*30);
+                        
+                        ctx.lineTo(point_3.top,point_3.left);
+                        ctx.lineTo(point_4.top,point_4.left);
+                        //ctx.lineTo(top1,left1);
+                        //ctx.lineTo(top1+Math.floor((Math.random()-0.5)*180),left1+Math.floor((Math.random()-0.5)*180));
+                        
+                        ctx.stroke();
+                        
+                        edge2.Point_List.push(point_3);
+                        edge2.Point_List.push(point_4);
+                        crack.Edge_List.push(edge2);
+                        
+                    };
+                    
+                    for (var k = 0; k >= 0; k--) {
+                        var edge3 = new Edge();
+                        ctx.beginPath();
+                        ctx.moveTo(top, left);
+                        
+                        var point_5 = new Point(top+Math.floor((1-k)*60+Math.random()*30),left-Math.floor((1-k)*60+Math.random()*30));
+                        var point_6 = new Point(point_5.top+Math.floor((Math.random()-0.5)*140),point_5.left+Math.floor((Math.random()-0.5)*140));
+                        //top3=top+Math.floor((1-k)*60+Math.random()*30);
+                        //left3=left-Math.floor((1-k)*60+Math.random()*30);
+                        
+                        ctx.lineTo(point_5.top,point_5.left);
+                        ctx.lineTo(point_6.top,point_6.left);
+                        //ctx.lineTo(top3,left3);
+                        //ctx.lineTo(top3+Math.floor((Math.random()-0.5)*140),left3+Math.floor((Math.random()-0.5)*140));
+                        
+                        ctx.stroke();
+                        
+                        edge3.Point_List.push(point_5);
+                        edge3.Point_List.push(point_6);
+                        crack.Edge_List.push(edge3);
+                        
+                    };
+                    
+                    Crack_List.push(crack);
+                    //alert(Crack_List.length);
+                    
+                }
+                
+                else{
+                    //alert("!");
+                    var crack = new Crack();
+                    for (var j = 0; j >= 0; j--) {
+                        var edge1 = new Edge();
+                        ctx.beginPath();
+                        ctx.moveTo(top, left);
+                        
+                        var point_1 = new Point(top+Math.floor((1-j)*80+Math.random()*30),left);
+                        var point_2 = new Point(point_1.top+Math.floor((Math.random()-0.5)*180),point_1.left+Math.floor((Math.random()-0.5)*180));
+                        //top2=top+Math.floor((1-j)*80+Math.random()*30);
+                        //left2=left;
+                        
+                        ctx.lineTo(point_1.top,point_1.left);
+                        ctx.lineTo(point_2.top,point_2.left);		
+                        //ctx.lineTo(top2,left2);
+                        //ctx.lineTo(top2+Math.floor((Math.random()-0.5)*180),left2+Math.floor((Math.random()-0.5)*180));
+                        
+                        ctx.stroke();
+                        
+                        edge1.Point_List.push(point_1);
+                        edge1.Point_List.push(point_2);
+                        crack.Edge_List.push(edge1);
+                        
+                    };
+                    
+                    for (var i = 0; i >= 0; i--) {
+                        var edge2 = new Edge();
+                        ctx.beginPath();
+                        ctx.moveTo(top, left);
+                        
+                        var point_3 = new Point(top,left-Math.floor((1-i)*80+Math.random()*30));
+                        var point_4 = new Point(point_3.top+Math.floor((Math.random()-0.5)*180),point_3.left+Math.floor((Math.random()-0.5)*180));
+                        //top1=top;
+                        //left1=left-Math.floor((1-i)*80+Math.random()*30);
+                        
+                        ctx.lineTo(point_3.top,point_3.left);
+                        ctx.lineTo(point_4.top,point_4.left);		
+                        //ctx.lineTo(top1,left1);
+                        //ctx.lineTo(top1+Math.floor((Math.random()-0.5)*180),left1+Math.floor((Math.random()-0.5)*180));
+                        
+                        
+                        ctx.stroke();
+                        
+                        edge2.Point_List.push(point_3);
+                        edge2.Point_List.push(point_4);
+                        crack.Edge_List.push(edge2);
+                        
+                    };
+                    for (var k = 0; k >= 0; k--) {
+                        var edge3 = new Edge();
+                        ctx.beginPath();
+                        ctx.moveTo(top, left);
+                        
+                        var point_5 = new Point(top-Math.floor((1-k)*60+Math.random()*30),left+Math.floor((1-k)*60+Math.random()*30));
+                        var point_6 = new Point(point_5.top+Math.floor((Math.random()-0.5)*140),point_5.left+Math.floor((Math.random()-0.5)*140));
+                        //top3=top-Math.floor((1-k)*60+Math.random()*30);
+                        //left3=left+Math.floor((1-k)*60+Math.random()*30);
+                        
+                        ctx.lineTo(point_5.top,point_5.left);
+                        ctx.lineTo(point_6.top,point_6.left);		
+                        //ctx.lineTo(top3,left3);
+                        //ctx.lineTo(top3+Math.floor((Math.random()-0.5)*140),left3+Math.floor((Math.random()-0.5)*140));
+                        
+                        ctx.stroke();
+                        
+                        edge3.Point_List.push(point_5);
+                        edge3.Point_List.push(point_6);
+                        crack.Edge_List.push(edge3);
+                        
+                    };
+                    
+                    Crack_List.push(crack);
+                    //alert(Crack_List.length);
+                    
+                }
+                
+                
+                
+                
+            };
+            
+            
+            
+                </script>
+            <link href="css/style.css" rel="stylesheet" type="text/css">
+                <link href="css/box_style.css" rel="stylesheet" type="text/css">
+    </head>
+    
+    <body style="background-image:url(images/bg.png)">
+        
+        
+        <div id="glass"><img style="width: 100%; height: 100%;" src="images/glass1.png"> </div>		
+        
+        <div id="dragon" style="position:fixed; background-color:red; width:50px; height:50px; z-index: -10;">
+            <img src="images/dragon.png">
+                </div>
+        <div id="cvs_div" style="position:fixed; width:1000px; height:100vh; top:0px; left: 0px; z-index: -5;">
+            <canvas id="canvas" width="1000", height="1000"></canvas>
+        </div>
+    </body>
+</html>

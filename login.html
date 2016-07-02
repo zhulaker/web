@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CatchYourDragon_LoginPage</title>
+<script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="js/jquery.XYTipsWindow.2.8.js"></script>
+<script type="text/javascript" src="js/Check_Info.js"></script>
+<script type="text/javascript">
+ $(document).ready(function() {
+	
+	$("#button_login").click(function(){
+	});
+	
+	$("#button_signup").click(function(){
+		$.XYTipsWindow({
+			___title:"Registration",
+			___content:"iframe:reg.html",
+			___width:"480",
+			___height:"370",
+			___showbg:true,
+			___drag:"___boxTitle"
+		});
+	});
+	
+	
+ })
+ </script>
+<link href="css/style.css" rel="stylesheet" type="text/css">
+<link href="css/box_style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body style="background-image:url(images/bg.png)">
+
+<div id="main_container">
+	<br /><br /><br /><br />
+    <div id="notifier_box">
+    <img src="images/banners.png" width="675" height="172" alt=""/> </div>
+    <br /><br /><br /><br />
+    <div id="login_container">
+    	<form action="UserLogin.php" method="post" onsubmit="return check_info();">
+    		<div id="username"><img src="images/Username.png" style="margin-right:20px;padding-right:10px"><input type="text" id="input_id" style="border-color:#73E12E"><br /></div>
+            <br />
+          	<div id="password"><img src="images/password.png" width="139" style="margin-right:20px;padding-right:10px"><input type="password" id="input_password" style="border-color:#73E12E"><br /><br /></div>
+            <div id="login_buttons">
+            <br /><br /><br /><br />
+            	&nbsp;&nbsp;
+          	<button type="submit" id="button_login" style="border-radius:15px;;"><img src="images/login.png"></button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          	<button type="button" id="button_signup" style="border-radius:15px;"><img src="images/signup.png" ></button>
+            </div>
+      	</form>
+    </div>
+</div>
+</body>
+</html>

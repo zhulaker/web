@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CatchYourDragon_LoginPage</title>
+<script src="js/jquery-1.4.4.min.js" type=text/javascript></script>
+<script type="text/javascript" src="js/Set_Glass.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+	$("#choose_fence").show();
+	//$("#choose_crack").hide();
+	$("#dragon").hide();
+	//alert($("#cover").offset().top);
+	$("#cover").on("click",function(event){
+		alert(event.pageX + "," + event.pageY);
+
+	})
+	});
+	
+	 var glasstype;
+	 var cracktype;
+	 function setglass1(){
+		
+		glasstype = 1;
+		
+		$("#choose_fence").remove();
+
+		//$("#choose_crack").show();
+		dragonStartMove();
+	 }
+	 function setglass2(){
+		glasstype = 2;
+
+		$("#choose_fence").remove();
+
+		$("#cover_content").attr("src", "images/glass2.png");
+		//$("#choose_crack").show();
+		dragonStartMove();
+	 }
+	// function setcrack1(){
+	// 	cracktype = 1;
+	// 	$("#choose_crack").hide();
+	// 	dragonStartMove();
+	// }
+	// function setcrack2(){
+	// 	cracktype = 2;
+	// 	$("#choose_crack").hide();
+	// 	dragonStartMove();
+	// }
+	// function setcrack3(){
+	// 	cracktype = 3;
+	// 	$("#choose_crack").hide();
+	// 	dragonStartMove();
+	// }
+	function dragonStartMove(){
+		$("#cover").fadeIn();
+		$("#dragon").show();
+		//alert("ddd");
+		if (glasstype==1) {
+		window.location.href='./GamePlaying2.html'};
+		if (glasstype==2) {window.location.href='./GamePlaying3.html'};
+		//animateDiv();
+	}
+	function makeNewPosition(){
+    
+    // Get viewport dimensions (remove the dimension of the div)
+    var h = $(window).height() - 50;
+    var w = $(window).width() - 50;
+    
+    var nh = Math.floor(Math.random() * h);
+    var nw = Math.floor(Math.random() * w);
+    
+    return [nh,nw];    
+    
+}
+
+function animateDiv(){
+    var newq = makeNewPosition();
+    var oldq = $('#dragon').offset();
+    var speed = calcSpeed([oldq.top, oldq.left], newq);
+    
+    $('#dragon').animate({ top: newq[0], left: newq[1] }, speed, function(){
+      animateDiv();        
+    });
+    
+};
+
+function calcSpeed(prev, next) {
+    
+    var x = Math.abs(prev[1] - next[1]);
+    var y = Math.abs(prev[0] - next[0]);
+    
+    var greatest = x > y ? x : y;
+    
+    var speedModifier = 0.2;
+
+    var speed = Math.ceil(greatest/speedModifier);
+
+    return speed;
+
+};
+ </script>
+
+<link href="css/style.css" rel="stylesheet" type="text/css">
+<link href="css/box_style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body style="background-image:url(images/bg.png)">
+	<br/><br/><br/><br/>
+	<div id="choose_fence">
+		<img src="images/choosefence.png"  width="390" height="58">
+		<br /><br /><br /><br />
+		<div id="glasses">
+		<img id="glass1" src="images/glass1.png" onclick="setglass1();">
+		<img  id="glass2" src="images/glass2.png" onclick="setglass2();">
+		</div>
+	</div>
+	<!-- <div id="choose_crack">
+	<img src="images/choosecrack.png"  width="390" height="58">
+	<br /><br /><br /><br />
+		<div id="fences">
+		<img src="images/crack1.png" onclick="setcrack1();">
+		<img src="images/crack2.png" onclick="setcrack2();">
+		<img src="images/crack3.png" onclick="setcrack3();">
+		</div>
+	</div> -->
+	<div id="dragon" style="position:fixed; width:50px; height:50px;">
+		<img src="images/dragon.png">
+	</div>
+	<div id="cover" style="width: 90%; height: 90%;display:none;" ><img id="cover_content" style="width: 100%; height: 100%;" src="images/glass1.png" > </div>
+</body>
+</html>

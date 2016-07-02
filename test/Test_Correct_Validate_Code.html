@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/Validate_Code.js"></script>
+<script>
+function test(){
+	document.getElementById("input").value = document.getElementById("checkCode").value;	
+	var input = document.getElementById("input").value		
+	var expect = document.getElementById("checkCode").value;
+	//alert(expect);
+	
+	if (input == expect){
+		alert("Test 'correct validate code' success!");
+	}
+	else{
+		alert("Test 'correct validate code' failed!");
+	}	
+}
+</script>
+</head>
+
+<body onLoad="createCode()">
+<p>Validate Code<p><input type="text"  readonly="readonly" id="checkCode" style="width: 80px; text-align:center"  /><br />
+<p>Input Validate Code</p><input id="input" type="text" id="inputCode" style="text-align:center"/><br /><br />
+<button onClick=test()>Test</button>
+</body>
+</html>

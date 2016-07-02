@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>advanture</title>
+<link href="css/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<script src="js/jquery-1.4.4.min.js" type=text/javascript></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		var a2 = document.getElementById("advanture_2");
+		a2.setAttribute('disabled','disabled');
+		var a3 = document.getElementById("advanture_3");
+		a3.setAttribute('disabled','disabled');
+	})
+	//call unlock2 or unlock3 after finish the previous stage
+	var unlock2 = function(){
+		document.getElementById("advanture_2").disabled = false;
+		document.getElementById("lock2").style.visibility = 'hidden';
+	}
+	var unlock3 = function(){
+		document.getElementById("advanture_3").disabled = false;
+		document.getElementById("lock3").style.visibility = 'hidden';
+	}
+</script>
+
+<body style="background-image:url(images/bg.png)">
+<div id="main_container">
+	<br /><br /><br /><br />
+    <div id="notifier_box">
+    <img src="images/banners.png" width="675" height="172" alt=""/> </div>
+    <br /><br /><br /><br />
+    <div id="advanture">
+    	<button id="advanture_1" type="button" style="border-radius:50%; border-color:#96E445"; onclick = "window.location.href='GamePlaying.html'"> 
+        <img src="images/advanture1.png" width="101" height="65"></button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="advanture_2" type="button" style="border-radius:50%; border-color:#96E445" onclick="window.location.href='GamePlaying.html'">
+        <img src="images/advanture2.png" width="101" height="65" style="position:absolute;"><img id="lock2" src="images/lock.png"  width="101" height="65" style="position:relative;"></button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="advanture_3" type="button" style="border-radius:50%; border-color:#96E445" onclick="window.location.href='GamePlaying.html'">
+        <img src="images/advanture3.png" width="101" height="65" style="position:absolute;"><img id="lock3" src="images/lock.png"  width="101" height="65" style="position:relative;"></button>
+    </div>
+</body>
+</html>

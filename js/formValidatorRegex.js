@@ -1,0 +1,4 @@
+﻿var regexEnum = 
+{	
+	username:"^\\w+$"
+}

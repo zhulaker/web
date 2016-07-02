@@ -1,1 +1,2 @@
-# This is a web game about catching the dragon.
+# Catch-Your-Dragon
+Project for CSE 542

@@ -1,0 +1,31 @@
+@charset "utf-8";
+
+body{
+	text-align:center;
+	background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+}
+
+#username > *{
+	vertical-align:middle;
+	text-align:left;
+	margin-right:25px;
+	position:relative;
+}
+
+#password > *{
+	vertical-align:middle;
+	text-align:left;
+	margin-right:25px;
+	position:relative;
+}
+
+.input{
+	position:absolute;
+}
+
+button{
+	vertical-align:middle	
+}
